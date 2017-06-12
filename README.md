@@ -3,6 +3,8 @@ Limesurvey
 
 Installs the Open Source on-line survey application Limesurvey
 
+ATTENTION: early beta status!
+
 Requirements
 ------------
 
@@ -16,7 +18,7 @@ Default **admin** password is **password** (sha256).
 Dependencies
 ------------
 
-None.
+debops framework
 
 Example Playbook
 ----------------
