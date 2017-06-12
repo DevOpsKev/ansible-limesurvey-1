@@ -24,10 +24,10 @@
 return array(
 	'components' => array(
 		'db' => array(
-			'connectionString' => 'mysql:host={{ limesurvey.db.host }};port=3306;dbname={{ limesurvey.db.name }};',
+			'connectionString' => 'mysql:host={{ limesurvey__database_host }};port=3306;dbname={{ limesurvey__database_name }};',
 			'emulatePrepare' => true,
-			'username' => '{{ limesurvey.db.limeuser }}',
-			'password' => '{{ limesurvey.db.limepassword }}',
+			'username' => '{{ limesurvey__database_user }}',
+			'password' => '{{ limesurvey__database_password }}',
 			'charset' => 'utf8',
 			'tablePrefix' => 'lime_',
 		),
@@ -53,7 +53,7 @@ return array(
 	// on your webspace.
 	// LimeSurvey developers: Set this to 2 to additionally display STRICT PHP error messages and get full access to standard templates
 		'debug'=>0,
-		'debugsql'=>0 // Set this to 1 to enanble sql logging, only active when debug = 2
+		'debugsql'=>0 // Set this to 1 to enable sql logging, only active when debug = 2
 	)
 );
 /* End of file config.php */

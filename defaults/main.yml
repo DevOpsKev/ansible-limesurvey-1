@@ -1,2 +1,256 @@
 ---
-# defaults file for limesurvey
+# .. vim: foldmarker=[[[,]]]:foldmethod=marker
+
+# debops.limesurvey default variables [[[
+# =====================================
+
+# .. contents:: Sections
+#    :local:
+#
+# .. include:: includes/all.rst
+
+
+# Basic configuration options [[[
+# -------------------------------
+
+limesurvey__database: '{{ ansible_local.limesurvey.database
+                      if (ansible_local|d() and ansible_local.limesurvey|d() and
+                          ansible_local.limesurvey.database|d())
+                      else ("postgresql"
+                            if (ansible_local|d() and ansible_local.postgresql is defined)
+                            else ("mariadb"
+                                  if (ansible_local|d() and ansible_local.mariadb is defined)
+                                  else "no-database-detected")) }}'
+
+limesurvey__database_host: 'localhost'
+
+# .. envvar:: limesurvey__main_domain [[[
+#
+# Default domain which will be used to host the "main" wiki instance.
+limesurvey__main_domain: 'limesurvey.{{ ansible_domain }}'
+                                                                   # ]]]
+# .. envvar:: limesurvey__domains [[[
+#
+# List of domains on which limesurvey is configured in nginx.
+limesurvey__domains: '{{ [ limesurvey__main_domain ] +
+                       limesurvey__farm_animals|d([]) }}'
+                                                                   # ]]]
+# .. envvar:: limesurvey__nginx_auth_realm [[[
+#
+# Basic Auth realm displayed in the login dialog.
+limesurvey__nginx_auth_realm: 'Access is restricted'
+                                                                   # ]]]
+# .. envvar:: limesurvey__nginx_access_policy [[[
+#
+# Access policy defined using debops.nginx_ role, applied to this limesurvey.
+limesurvey__nginx_access_policy: ''
+
+                                                                   # ]]]
+# .. envvar:: limesurvey__nginx_filename [[[
+#
+# Name of the nginx configuration file for limesurvey website, without the
+# ``.conf`` extension.
+limesurvey__nginx_filename: 'debops.limesurvey'
+                                                                   # ]]]
+                                                                   # ]]]
+# User, group, app directories [[[
+# --------------------------------
+
+# .. envvar:: limesurvey__user [[[
+#
+# limesurvey system user account.
+limesurvey__user: 'limesurvey'
+
+                                                                   # ]]]
+# .. envvar:: limesurvey__group [[[
+#
+# limesurvey system user group.
+limesurvey__group: 'limesurvey'
+
+                                                                   # ]]]
+# .. envvar:: limesurvey__home [[[
+#
+# limesurvey home directory.
+limesurvey__home: '{{ (ansible_local.nginx.www
+                     if (ansible_local|d() and ansible_local.nginx|d() and
+                         ansible_local.nginx.www|d())
+                     else "/srv/www") + "/" + limesurvey__user }}'
+
+                                                                   # ]]]
+# .. envvar:: limesurvey__src [[[
+#
+# Base path for git bare repository with limesurvey source.
+limesurvey__src: '{{ ansible_local.root.src + "/" + limesurvey__user }}'
+
+                                                                   # ]]]
+# .. envvar:: limesurvey__www [[[
+#
+# Base web root directory for limesurvey website.
+limesurvey__www: '{{ (ansible_local.nginx.www
+                    if (ansible_local|d() and ansible_local.nginx|d() and
+                        ansible_local.nginx.www|d())
+                    else "/srv/www") + "/" + limesurvey__user }}'
+
+                                                                   # ]]]
+# .. envvar:: limesurvey__webserver_user [[[
+#
+# limesurvey webserver user (needs read-only access to the website code).
+limesurvey__webserver_user: '{{ ansible_local.nginx.user
+                              if (ansible_local|d() and
+                                  ansible_local.nginx|d() and
+                                  ansible_local.nginx.user|d())
+                              else "www-data" }}'
+                                                                   # ]]]
+                                                                   # ]]]
+# Application sources [[[
+# -----------------------
+
+limesurvey__package_url: 'https://www.limesurvey.org/de/stable-release?download=2054:limesurvey2651%20170522targz'
+limesurvey__package: 'limesurvey265plus-build170522.tar.gz'
+
+
+# .. envvar:: limesurvey__git_checkout [[[
+#
+# Default path where limesurvey source files will be deployed.
+limesurvey__git_checkout: '{{ limesurvey__www + "/sites/" + limesurvey__domains[0] + "/public" }}'
+
+limesurvey__database_name: 'limesurvey'
+limesurvey__database_user: 'limesurvey'
+    # TODO
+limesurvey__database_password: 'limesurvey'
+
+limesurvey__mariadb__dependent_databases:
+
+  - database: '{{ limesurvey__database_name }}'
+
+# User configuration for debops.mariadb_ Ansible role.
+limesurvey__mariadb__dependent_users:
+
+  - database: '{{ limesurvey__database_name }}'
+    user: '{{ limesurvey__database_user }}'
+    password: '{{ limesurvey__database_password }}'
+
+# Application plugins, themes, system packages [[[
+# ------------------------------------------------
+
+# .. envvar:: limesurvey__base_packages [[[
+#
+# List of base APT packages to install for limesurvey support.
+limesurvey__base_packages: [ '' ]
+                                                                   # ]]]
+# .. envvar:: limesurvey__packages [[[
+#
+# List of additional APT packages to install for limesurvey support.
+limesurvey__packages: [ 'python-mysqldb', 'tar', 'unzip', 'bzip2', 'gzip' ]
+                                                                   # ]]]
+# .. envvar:: limesurvey__templates [[[
+#
+# List of limesurvey templates.
+limesurvey__templates: []
+
+                                                                   # ]]]
+# .. envvar:: limesurvey__default_templates [[[
+#
+# List of default limesurvey templates.
+limesurvey__default_templates: '{{ limesurvey__templates_vector }}'
+
+                                                                   # ]]]
+# Other variables [[[
+# -------------------
+
+# .. envvar:: limesurvey__max_file_size [[[
+#
+# Maximum upload size, in MB.
+limesurvey__max_file_size: '30'
+                                                                   # ]]]
+                                                                   # ]]]
+# Configuration for other Ansible roles [[[
+# ----------------------------------------
+
+# .. envvar:: limesurvey__php__dependent_packages [[[
+#
+# List of PHP packages to install using debops.php_ role.
+limesurvey__php__dependent_packages:
+
+  - [ 'cli', 'curl', 'mcrypt', 'gd', 'ldap', 'imap', 'mysql' ]
+
+                                                                   # ]]]
+# .. envvar:: limesurvey__php__dependent_pools [[[
+#
+# Configuration of the limesurvey PHP-FPM pool managed by the debops.php_ role.
+limesurvey__php__dependent_pools:
+
+  - name: 'limesurvey'
+    user: '{{ limesurvey__user }}'
+    group: '{{ limesurvey__group }}'
+
+    php_admin_values:
+      post_max_size:       '{{ limesurvey__max_file_size }}M'
+      upload_max_filesize: '{{ limesurvey__max_file_size }}M'
+
+                                                                   # ]]]
+# .. envvar:: limesurvey__nginx__dependent_upstreams [[[
+#
+# Configuration of the limesurvey nginx upstream, used by debops.nginx_
+# Ansible role.
+limesurvey__nginx__dependent_upstreams:
+
+  - name: 'php_limesurvey'
+    type: 'php'
+    php_pool: 'limesurvey'
+
+                                                                   # ]]]
+# .. envvar:: limesurvey__nginx__dependent_servers [[[
+#
+# Configuration of the limesurvey nginx server, used by debops.nginx_
+# Ansible role.
+limesurvey__nginx__dependent_servers:
+
+  - name: '{{ limesurvey__domains }}'
+    filename: '{{ limesurvey__nginx_filename }}'
+    by_role: 'debops.limesurvey'
+    type: 'php'
+    root: '{{ limesurvey__git_checkout }}'
+    access_policy: '{{ limesurvey__nginx_access_policy }}'
+    auth_basic_realm: '{{ limesurvey__nginx_auth_realm }}'
+    index: 'index.html index.htm index.php doku.php'
+
+    options: |
+      autoindex off;
+      client_max_body_size {{ limesurvey__max_file_size }}M;
+      client_body_buffer_size 128k;
+
+    location:
+      '/': |
+        try_files $uri $uri/ @limesurvey;
+
+      '@limesurvey': |
+        rewrite ^/_media/(.*)           /lib/exe/fetch.php?media=$1   last;
+        rewrite ^/_detail/(.*)          /lib/exe/detail.php?media=$1  last;
+        rewrite ^/_export/([^/]+)/(.*)  /doku.php?do=export_$1&id=$2  last;
+        rewrite ^/(.*)                  /doku.php?id=$1               last;
+
+      '~ ^/lib.*\.(gif|png|ico|jpg)$': |
+        expires 31536000s;
+        add_header Pragma "public";
+        add_header Cache-Control "max-age=31536000, public, must-revalidate, proxy-revalidate";
+        log_not_found off;
+
+      '~ /(data|conf|bin|inc|install.php)/': |
+        deny all;
+
+    php_upstream: 'php_limesurvey'
+    php_options: |
+      fastcgi_intercept_errors        on;
+      fastcgi_ignore_client_abort     off;
+      fastcgi_connect_timeout         60;
+      fastcgi_send_timeout            180;
+      fastcgi_read_timeout            180;
+      fastcgi_buffer_size             128k;
+      fastcgi_buffers               4 256k;
+      fastcgi_busy_buffers_size       256k;
+      fastcgi_temp_file_write_size    256k;
+
+# ]]]
+# ]]]
+# ]]]
