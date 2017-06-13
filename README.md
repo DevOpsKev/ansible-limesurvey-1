@@ -3,6 +3,8 @@ Limesurvey
 
 Installs the Open Source on-line survey application Limesurvey
 
+based on https://github.com/ICTO/ansible-limesurvey 
+
 ATTENTION: early beta status!
 
 Requirements
