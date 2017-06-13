@@ -1,7 +1,7 @@
 ---
 
 - name: Download Limesurvey package
-  get_url: url={{ limesurvey__package_url }} dest=/tmp/{{ limesurvey__package }}
+  get_url: url={{ limesurvey__package_url }} dest=/tmp/{{ limesurvey__package }} checksum='sha256:{{ limesurvey__package_checksum }}'
 
 - name: Extract Limesurvey package
   unarchive: copy=no src=/tmp/{{ limesurvey__package }} dest={{ limesurvey__www }} group=users owner=root creates={{ limesurvey__www }}/limesurvey

@@ -107,7 +107,7 @@ limesurvey__webserver_user: '{{ ansible_local.nginx.user
 
 limesurvey__package_url: 'https://www.limesurvey.org/de/stable-release?download=2054:limesurvey2651%20170522targz'
 limesurvey__package: 'limesurvey265plus-build170522.tar.gz'
-
+limesurvey__package_checksum: '06f52326eee999ddf0a2bddaaf0ff8096b856dc32871b9830775a7c0e0d9386d'
 
 # .. envvar:: limesurvey__git_checkout [[[
 #
